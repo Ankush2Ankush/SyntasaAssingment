@@ -42,6 +42,11 @@ frontend/build/
 # Logs
 *.log
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
 # OS
 .DS_Store
 Thumbs.db
