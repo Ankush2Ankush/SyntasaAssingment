@@ -135,13 +135,13 @@ async def get_sensitivity_analysis(db: Session = Depends(get_db)) -> Dict[str, A
                     AND tpep_dropoff_datetime > tpep_pickup_datetime
             """
         else:
-            query = """
+            query = f"""
                 SELECT 
                     :threshold AS threshold,
                     COUNT(*) AS total_trips,
-                    COUNT(*) FILTER (WHERE trip_distance < :threshold) AS trips_below,
+                    {count_filter('trip_distance < :threshold')} AS trips_below,
                     SUM(total_amount) AS total_revenue,
-                    SUM(total_amount) FILTER (WHERE trip_distance >= :threshold) AS revenue_after
+                    SUM(CASE WHEN trip_distance >= :threshold THEN total_amount ELSE 0 END) AS revenue_after
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
                     AND tpep_pickup_datetime < '2025-05-01'

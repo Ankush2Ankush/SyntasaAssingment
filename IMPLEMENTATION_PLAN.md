@@ -637,6 +637,10 @@ frontend/
 
 ### 5.4 Deployment
 
+**Database Deployment Strategy**: The project uses **SQLite** by default (`sqlite:///./nyc_taxi.db`), which is the **recommended deployment path** for this project. SQLite provides a simple, self-contained database that works well for this analytics dashboard.
+
+**Important**: The database file (`nyc_taxi.db`) is too large to commit to git (excluded in `.gitignore`). The database will be **generated on the server** during deployment using the ETL pipeline. This is the recommended approach.
+
 #### Deployment Architecture
 
 **Backend (AWS)**
@@ -654,9 +658,23 @@ frontend/
   - Containerize FastAPI app with Docker
   - Deploy to ECS Fargate for serverless containers
   - Use Application Load Balancer for routing
+- **Database: SQLite (Recommended)**
+  - Project uses SQLite by default (`sqlite:///./nyc_taxi.db`)
+  - **Database Generation**: Database file is generated on server during deployment (too large for git)
+  - **Advantages**: 
+    - Simple deployment - no separate database service needed
+    - Works out of the box with current codebase
+    - No additional AWS service costs
+    - Self-contained and portable
+  - **Deployment Methods** (choose one):
+    - **Method 1: ETL on Server (Recommended)**: Run ETL pipeline after deployment to generate database
+    - **Method 2: S3 Storage**: Upload database file to S3, download during deployment (faster, requires pre-built database)
+  - **Deployment Notes**:
+    - Database file must be on persistent storage (EBS volume) for EC2/Elastic Beanstalk
+    - Parquet data files must be accessible (included in deployment or stored in S3)
+    - SQLite handles read-heavy analytics workloads well for this use case
+  - **Optional: PostgreSQL/RDS** (if needed for multi-instance scaling or high concurrency)
 - **Additional AWS Services**:
-  - **RDS (PostgreSQL)**: Managed database service for SQL database
-  - **Redshift**: Data warehouse for large-scale analytics (alternative to RDS)
   - **S3**: Store raw parquet files and processed data
   - **CloudWatch**: Monitor API logs, database performance, and query execution times
   - **Route 53**: Domain name configuration (optional)
@@ -668,9 +686,25 @@ frontend/
 
 #### AWS Backend Setup Steps
 1. **Prepare for Deployment**:
+   - **IMPORTANT: Remove large files from git history** (if already committed):
+     ```bash
+     # Remove database file from git history
+     git rm --cached backend/nyc_taxi.db
+     git commit -m "Remove database file from git (too large)"
+     
+     # If file is in git history, remove it completely:
+     git filter-branch --force --index-filter "git rm --cached --ignore-unmatch backend/nyc_taxi.db" --prune-empty --tag-name-filter cat -- --all
+     # Or use git-filter-repo (recommended):
+     # pip install git-filter-repo
+     # git filter-repo --path backend/nyc_taxi.db --invert-paths
+     ```
    - Create `requirements.txt` with all dependencies
    - Create `.ebextensions` config (for Elastic Beanstalk) or Dockerfile (for ECS)
    - Configure CORS in FastAPI to allow frontend domain
+   - **Handle large files** (database and parquet files excluded from git):
+     - **Option A**: Include `data/` folder with parquet files in deployment package (zip/tar separately, don't commit to git)
+     - **Option B**: Upload parquet files to S3 and configure ETL to download from S3
+     - **Option C**: Upload pre-built database to S3 and download during deployment
 
 2. **Deploy to AWS Elastic Beanstalk**:
    ```bash
@@ -697,23 +731,145 @@ frontend/
    # Use systemd service or PM2 for process management
    ```
 
-4. **Environment Configuration**:
+4. **Database Configuration (SQLite)**:
+
+   **Method 1: Generate Database on Server (Recommended)**
+   
+   Since the database file is too large for git, generate it on the server:
+   
+   a. **Include parquet data files in deployment** (parquet files are also excluded from git):
+      - **Option A: Include in deployment package** (recommended for simplicity):
+        - Parquet files are in `data/` folder (excluded from git via `.gitignore`)
+        - When deploying, manually include `data/` folder in deployment package
+        - For EC2: Copy `data/` folder to server via SCP or include in deployment script
+        - For Elastic Beanstalk: Add `data/` folder to deployment zip (exclude from git but include in zip)
+        - For ECS: Copy `data/` folder into Docker image or mount as volume
+      - **Option B: Store in S3**:
+        - Upload parquet files to S3 bucket
+        - Modify ETL to download from S3 before processing
+        - Configure IAM permissions for S3 access
+   
+   b. **Run ETL after deployment**:
+      ```bash
+      # SSH into EC2 instance
+      cd /path/to/app
+      source venv/bin/activate  # or activate virtual environment
+      python run_etl.py
+      ```
+   
+   c. **For Elastic Beanstalk**: Add post-deployment hook in `.ebextensions`:
+      ```yaml
+      # .ebextensions/01_run_etl.config
+      container_commands:
+        01_run_etl:
+          command: "cd /var/app/current && python run_etl.py"
+          leader_only: true
+      ```
+   
+   d. **For ECS/Fargate**: Add ETL step in Dockerfile or use init container
+   
+   **Method 2: Pre-built Database from S3 (Faster Deployment)**
+   
+   If you have a pre-built database file:
+   
+   a. **Upload database to S3** (one-time):
+      ```bash
+      aws s3 cp nyc_taxi.db s3://your-bucket/database/nyc_taxi.db
+      ```
+   
+   b. **Download during deployment**:
+      - For EC2: Add download script in user-data or deployment script
+      - For Elastic Beanstalk: Add to `.ebextensions`:
+        ```yaml
+        # .ebextensions/02_download_db.config
+        files:
+          "/opt/elasticbeanstalk/hooks/appdeploy/post/99_download_db.sh":
+            mode: "000755"
+            content: |
+              #!/bin/bash
+              aws s3 cp s3://your-bucket/database/nyc_taxi.db /var/app/current/nyc_taxi.db
+        ```
+   
+   **Environment Configuration**:
+   - **Environment variables**: 
+     - Leave `DATABASE_URL` unset to use default SQLite path, OR
+     - Set `DATABASE_URL=sqlite:///./nyc_taxi.db` explicitly
+   - **Data files path**: 
+     - Set `DATA_DIR` environment variable if parquet files are in non-standard location
+     - Default: `../data` (relative to backend directory)
+   - **Persistent storage**: 
+     - For EC2: Mount EBS volume and store database file there
+     - For Elastic Beanstalk: Use `.ebextensions` to configure persistent storage
+     - For ECS/Fargate: Use EFS (Elastic File System) for persistent storage
+   - **S3 Access** (if using Method 2 or S3 for parquet files):
+     - Configure IAM role with S3 read permissions
+     - Set AWS credentials or use instance role
+
+5. **Environment Configuration**:
    - Set environment variables in AWS (Elastic Beanstalk environment or EC2)
    - Configure security groups to allow HTTP/HTTPS traffic
    - Set up SSL certificate (optional, using AWS Certificate Manager)
 
+#### Troubleshooting: Large Files in Git
+
+**Problem**: Database file or parquet files committed to git, causing push failures.
+
+**Solution**:
+1. **Remove from git tracking** (if file is staged but not committed):
+   ```bash
+   git rm --cached backend/nyc_taxi.db
+   git commit -m "Remove database file from git"
+   ```
+
+2. **Remove from git history** (if file is already in commits):
+   ```bash
+   # Option 1: Using git filter-branch (built-in)
+   git filter-branch --force --index-filter "git rm --cached --ignore-unmatch backend/nyc_taxi.db" --prune-empty --tag-name-filter cat -- --all
+   
+   # Option 2: Using git-filter-repo (recommended, faster)
+   pip install git-filter-repo
+   git filter-repo --path backend/nyc_taxi.db --invert-paths
+   
+   # After removing from history, force push (WARNING: rewrites history)
+   git push origin --force --all
+   ```
+
+3. **Verify `.gitignore` includes**:
+   - `*.db`, `*.sqlite`, `*.sqlite3` (database files)
+   - `data/*.parquet` (parquet files)
+
+4. **For deployment**: Include parquet files in deployment package manually (not via git)
+
 #### Deployment Checklist
+
+**Database Setup (SQLite)**:
+- [ ] **Choose deployment method**: ETL on server (Method 1) OR Pre-built from S3 (Method 2)
+- [ ] **For Method 1 (ETL on Server)**:
+  - [ ] Parquet data files included in deployment package OR stored in S3
+  - [ ] ETL script configured to access data files (check `DATA_DIR` path)
+  - [ ] Post-deployment hook configured to run ETL (for Elastic Beanstalk/ECS)
+  - [ ] ETL pipeline tested and run after deployment
+- [ ] **For Method 2 (S3 Pre-built)**:
+  - [ ] Database file uploaded to S3 bucket
+  - [ ] Download script configured in deployment process
+  - [ ] IAM permissions configured for S3 access
+  - [ ] Database file downloaded to persistent storage location
+- [ ] Persistent storage (EBS volume/EFS) configured for database file
+- [ ] DATABASE_URL environment variable configured (or left unset for default SQLite path)
+- [ ] DATA_DIR environment variable set (if parquet files in non-standard location)
+- [ ] Database file verified to exist and be accessible after deployment
+
+**Backend Deployment**:
 - [ ] AWS account set up and configured
-- [ ] Database set up (RDS PostgreSQL or cloud data warehouse)
-- [ ] Database schema created with indexes
-- [ ] ETL pipeline executed to load data into database
-- [ ] SQL queries tested and optimized
+- [ ] SQL queries tested and optimized (with current database)
 - [ ] Backend deployed to AWS (Elastic Beanstalk/EC2/ECS)
 - [ ] Database connection configured in backend
 - [ ] Backend API accessible and health check working
 - [ ] CORS configured correctly in FastAPI for frontend domain
-- [ ] Security groups configured to allow API and database access
-- [ ] Environment variables set in AWS (including DATABASE_URL)
+- [ ] Security groups configured to allow API access (and database access if using RDS)
+- [ ] Environment variables set in AWS (including DATABASE_URL if needed)
+
+**Frontend Deployment**:
 - [ ] Frontend built and deployed
 - [ ] API endpoint (AWS backend URL) configured in frontend
 - [ ] Dashboard fully functional
