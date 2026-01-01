@@ -1,6 +1,7 @@
 """
 FastAPI application entry point for NYC TLC Analytics Dashboard
 """
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.connection import engine, Base
@@ -17,10 +18,13 @@ app = FastAPI(
     redoc_url=None  # Disable ReDoc
 )
 
-# CORS configuration
+# CORS configuration - allow frontend URLs from environment or default to localhost
+frontend_urls = os.getenv("FRONTEND_URLS", "http://localhost:5173,http://localhost:3000").split(",")
+frontend_urls = [url.strip() for url in frontend_urls if url.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Vite and CRA default ports
+    allow_origins=frontend_urls,  # Configure via FRONTEND_URLS environment variable
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,4 +50,10 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+
+@app.get("/api/health")
+async def api_health_check():
+    """Health check endpoint for API monitoring"""
+    return {"status": "healthy", "service": "nyc-taxi-api"}
 
