@@ -28,7 +28,7 @@ async def get_surge_events(
                     AVG(fare_amount) AS avg_fare
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND fare_amount > 0
                 GROUP BY pulocationid
             )
@@ -57,7 +57,7 @@ async def get_surge_events(
                     PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY fare_amount) AS median_fare
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND fare_amount > 0
                 GROUP BY pulocationid
             )
@@ -108,7 +108,7 @@ async def get_surge_revenue_correlation(
                     AVG(fare_amount) AS avg_fare
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND fare_amount > 0
                 GROUP BY pulocationid
             ),
@@ -142,7 +142,7 @@ async def get_surge_revenue_correlation(
                     PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY fare_amount) AS median_fare
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND fare_amount > 0
                 GROUP BY pulocationid
             ),
@@ -198,7 +198,7 @@ async def get_surge_zones(
                     AVG(fare_amount) AS avg_fare
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND fare_amount > 0
                 GROUP BY pulocationid
             )
@@ -224,7 +224,7 @@ async def get_surge_zones(
                     PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY fare_amount) AS median_fare
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND fare_amount > 0
                 GROUP BY pulocationid
             )

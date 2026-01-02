@@ -1,0 +1,46 @@
+# Commands to run after SSH connection is established
+# Copy and paste these commands one by one or as a block
+
+# Step 1: Navigate to app directory
+cd /var/app/current
+
+# Step 2: Check if data files exist
+echo "=== Checking Data Files ==="
+ls -lh data/ 2>/dev/null || echo "Data directory missing"
+
+# Step 3: Download data files if missing
+if [ ! -f "data/yellow_tripdata_2025-01.parquet" ]; then
+    echo "Downloading data files from S3..."
+    mkdir -p data
+    aws s3 cp s3://nyc-taxi-data-800155829166/data/ ./data/ --recursive
+    echo "Data files downloaded:"
+    ls -lh data/
+fi
+
+# Step 4: Check database status
+echo ""
+echo "=== Checking Database ==="
+if [ -f "nyc_taxi.db" ]; then
+    DB_SIZE=$(du -h nyc_taxi.db | cut -f1)
+    echo "Database exists: $DB_SIZE"
+    
+    # Check trip count
+    source /var/app/venv/*/bin/activate
+    export PYTHONPATH="/var/app/current:$PYTHONPATH"
+    TRIP_COUNT=$(python -c "from app.database.connection import engine; import pandas as pd; result = pd.read_sql('SELECT COUNT(*) as count FROM trips', engine); print(result['count'].iloc[0])" 2>/dev/null)
+    
+    if [ -n "$TRIP_COUNT" ] && [ "$TRIP_COUNT" -gt 0 ]; then
+        echo "✅ Database has $TRIP_COUNT trips - ETL already completed!"
+    else
+        echo "⚠️ Database exists but is empty. Running ETL..."
+        python run_etl.py
+    fi
+else
+    echo "Database not found. Running ETL to create it..."
+    source /var/app/venv/*/bin/activate
+    export PYTHONPATH="/var/app/current:$PYTHONPATH"
+    python run_etl.py
+fi
+
+
+

@@ -26,7 +26,7 @@ async def get_efficiency_timeseries(db: Session = Depends(get_db)) -> Dict[str, 
             SUM(total_amount) / NULLIF(COUNT(*) * AVG({duration_minutes()}) / 60, 0) AS efficiency
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
             AND tpep_dropoff_datetime > tpep_pickup_datetime
         GROUP BY {date_trunc_hour('tpep_pickup_datetime')}
         ORDER BY hour
@@ -57,7 +57,7 @@ async def get_efficiency_heatmap(db: Session = Depends(get_db)) -> Dict[str, Any
             SUM(total_amount) / NULLIF(COUNT(*) * AVG({duration_minutes()}) / 60, 0) AS efficiency
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
             AND tpep_dropoff_datetime > tpep_pickup_datetime
         GROUP BY {extract_dow('tpep_pickup_datetime')}, {extract_hour('tpep_pickup_datetime')}
         ORDER BY day_of_week, hour_of_day
@@ -86,7 +86,7 @@ async def get_demand_efficiency_correlation(db: Session = Depends(get_db)) -> Di
             SUM(total_amount) / NULLIF(COUNT(*) * AVG({duration_minutes()}) / 60, 0) AS efficiency
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
             AND tpep_dropoff_datetime > tpep_pickup_datetime
         GROUP BY {date_trunc_hour('tpep_pickup_datetime')}
         HAVING COUNT(*) > 10  -- Filter out low-volume hours

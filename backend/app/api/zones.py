@@ -31,7 +31,7 @@ async def get_zone_revenue(
             AVG({duration_sql}) AS avg_duration_minutes
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
             AND tpep_dropoff_datetime > tpep_pickup_datetime
         GROUP BY pulocationid
         ORDER BY total_revenue DESC
@@ -74,7 +74,7 @@ async def get_zone_net_profit(
             SUM(total_amount) - (COUNT(*) * :idle_cost_per_hour * AVG({duration_sql}) / 60) AS net_profit
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
             AND tpep_dropoff_datetime > tpep_pickup_datetime
         GROUP BY pulocationid
         ORDER BY net_profit DESC

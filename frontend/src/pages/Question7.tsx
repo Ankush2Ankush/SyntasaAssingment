@@ -126,17 +126,7 @@ const Question7 = () => {
               <Box sx={{ height: 400 }}>
                 <BarChart
                   data={variabilityBarData}
-                  options={{
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                        title: {
-                          display: true,
-                          text: 'Coefficient of Variation',
-                        },
-                      },
-                    },
-                  }}
+                  yAxisLabel="Coefficient of Variation"
                 />
               </Box>
             </Paper>

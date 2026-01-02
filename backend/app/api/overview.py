@@ -20,7 +20,7 @@ async def get_overview(db: Session = Depends(get_db)) -> Dict[str, Any]:
         SELECT COUNT(*) as total_trips
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
     """
     total_trips = db_service.execute_scalar(total_trips_query)
     
@@ -32,7 +32,7 @@ async def get_overview(db: Session = Depends(get_db)) -> Dict[str, Any]:
             MAX(tpep_pickup_datetime) as end_date
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
     """
     date_range = db_service.execute_query(date_range_query).iloc[0]
     
@@ -45,7 +45,7 @@ async def get_overview(db: Session = Depends(get_db)) -> Dict[str, Any]:
         SELECT SUM(total_amount) as total_revenue
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
     """
     total_revenue = db_service.execute_scalar(revenue_query) or 0
     
@@ -58,7 +58,7 @@ async def get_overview(db: Session = Depends(get_db)) -> Dict[str, Any]:
             "total_revenue": float(total_revenue) if total_revenue else 0.0
         },
         "assumptions": {
-            "date_range": "2025-01-01 to 2025-04-30",
+            "date_range": "2025-01-01 to 2025-01-31",
             "data_source": "NYC TLC Yellow Taxi Trip Records"
         }
     }

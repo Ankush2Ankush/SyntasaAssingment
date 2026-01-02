@@ -1,0 +1,105 @@
+# Exclude virtual environments (CRITICAL - these are huge)
+venv/
+.venv/
+backend/venv/
+backend/backend/
+**/venv/
+**/.venv/
+
+# Exclude Python cache
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Exclude database files (CRITICAL - 5.4 GB!)
+*.db
+*.sqlite
+*.sqlite3
+nyc_taxi.db
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# Exclude logs
+*.log
+logs/
+**/*.log
+
+# Exclude git
+.git/
+.gitignore
+.gitattributes
+
+# Exclude documentation (not needed in deployment)
+*.md
+*.txt
+!requirements.txt
+!Procfile
+!README.md
+
+# Exclude IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# Exclude test files
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+tests/
+test_*.py
+*_test.py
+
+# Exclude deployment scripts (not needed on server)
+*.ps1
+*.bat
+*.sh
+!deploy_helper.ps1
+
+# Exclude large data files (CRITICAL - will be uploaded to S3 separately)
+data/
+**/data/
+*.parquet
+**/*.parquet
+*.csv
+!data/taxi_zone_lookup.csv
+
+# Exclude other large files
+*.pdf
+*.docx
+*.har
+
+# Exclude Elastic Beanstalk local files (CRITICAL - old deployments are huge!)
+.elasticbeanstalk/app_versions/
+.elasticbeanstalk/saved_configs/
+**/.elasticbeanstalk/app_versions/**
+**/.elasticbeanstalk/saved_configs/**
+
+# Exclude all zip files (old deployment archives)
+*.zip
+**/.elasticbeanstalk/app_versions/
+**/.elasticbeanstalk/saved_configs/
+*.zip
+!requirements.txt
+
+# Exclude node_modules if any
+node_modules/
+**/node_modules/
+
+# Exclude OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Exclude temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+

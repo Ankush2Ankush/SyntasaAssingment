@@ -107,3 +107,5 @@ Write-Host "  3. Monitor ETL process in logs: eb logs" -ForegroundColor Gray
 Write-Host ""
 
 
+
+

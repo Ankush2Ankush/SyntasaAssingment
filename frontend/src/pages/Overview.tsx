@@ -7,7 +7,7 @@ import { Container, Typography, Box, Grid, Card, CardContent } from '@mui/materi
 import LoadingSpinner from '../components/Common/LoadingSpinner';
 
 const Overview = () => {
-  const { data, isLoading, error, isError } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['overview'],
     queryFn: getOverview,
     retry: 2,

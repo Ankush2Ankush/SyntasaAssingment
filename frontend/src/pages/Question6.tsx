@@ -134,22 +134,8 @@ const Question6 = () => {
               <Box sx={{ height: 400 }}>
                 <ScatterChart
                   data={scatterData}
-                  options={{
-                    scales: {
-                      x: {
-                        title: {
-                          display: true,
-                          text: 'Driver Incentive Score (Earnings per Minute)',
-                        },
-                      },
-                      y: {
-                        title: {
-                          display: true,
-                          text: 'System Efficiency Score',
-                        },
-                      },
-                    },
-                  }}
+                  xAxisLabel="Driver Incentive Score (Earnings per Minute)"
+                  yAxisLabel="System Efficiency Score"
                 />
               </Box>
             </Paper>
@@ -170,13 +156,6 @@ const Question6 = () => {
               <Box sx={{ height: 400 }}>
                 <BarChart
                   data={misalignmentBarData}
-                  options={{
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                      },
-                    },
-                  }}
                 />
               </Box>
             </Paper>
@@ -197,13 +176,6 @@ const Question6 = () => {
               <Box sx={{ height: 400 }}>
                 <BarChart
                   data={driverBarData}
-                  options={{
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                      },
-                    },
-                  }}
                 />
               </Box>
             </Paper>

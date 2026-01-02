@@ -31,7 +31,7 @@ async def get_variability_heatmap(db: Session = Depends(get_db)) -> Dict[str, An
                     {duration_minutes()} AS duration_minutes
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND tpep_dropoff_datetime > tpep_pickup_datetime
                     AND trip_distance > 0
             ),
@@ -74,7 +74,7 @@ async def get_variability_heatmap(db: Session = Depends(get_db)) -> Dict[str, An
                     {duration_minutes()} AS duration_minutes
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND tpep_dropoff_datetime > tpep_pickup_datetime
                     AND trip_distance > 0
             )
@@ -177,7 +177,7 @@ async def get_variability_trends(db: Session = Depends(get_db)) -> Dict[str, Any
                     AVG({duration_minutes()} * {duration_minutes()}) AS mean_sq_duration
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND tpep_dropoff_datetime > tpep_pickup_datetime
                 GROUP BY DATE(tpep_pickup_datetime), {extract_hour('tpep_pickup_datetime')}
                 HAVING COUNT(*) >= 10

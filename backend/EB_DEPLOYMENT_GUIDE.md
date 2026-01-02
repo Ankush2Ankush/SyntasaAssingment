@@ -148,3 +148,5 @@ curl https://your-app.elasticbeanstalk.com/api/health
 4. **Backup Strategy**: Set up database backup
 
 
+
+

@@ -26,7 +26,7 @@ async def get_current_wait_time(db: Session = Depends(get_db)) -> Dict[str, Any]
                     COUNT(*) AS demand
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                 GROUP BY pulocationid, {date_trunc_hour('tpep_pickup_datetime')}
             ),
             supply AS (
@@ -36,7 +36,7 @@ async def get_current_wait_time(db: Session = Depends(get_db)) -> Dict[str, Any]
                     COUNT(*) AS supply
                 FROM trips
                 WHERE tpep_dropoff_datetime >= '2025-01-01'
-                    AND tpep_dropoff_datetime < '2025-05-01'
+                    AND tpep_dropoff_datetime < '2025-02-01'
                 GROUP BY dolocationid, {date_trunc_hour('tpep_dropoff_datetime')}
             ),
             combined AS (
@@ -81,7 +81,7 @@ async def get_current_wait_time(db: Session = Depends(get_db)) -> Dict[str, Any]
                     COUNT(*) AS demand
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                 GROUP BY pulocationid, {date_trunc_hour('tpep_pickup_datetime')}
             ),
             supply AS (
@@ -91,7 +91,7 @@ async def get_current_wait_time(db: Session = Depends(get_db)) -> Dict[str, Any]
                     COUNT(*) AS supply
                 FROM trips
                 WHERE tpep_dropoff_datetime >= '2025-01-01'
-                    AND tpep_dropoff_datetime < '2025-05-01'
+                    AND tpep_dropoff_datetime < '2025-02-01'
                 GROUP BY dolocationid, {date_trunc_hour('tpep_dropoff_datetime')}
             )
             SELECT 

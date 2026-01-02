@@ -26,7 +26,7 @@ async def get_congestion_zones(db: Session = Depends(get_db)) -> Dict[str, Any]:
             AVG({duration_minutes()}) / NULLIF(AVG(trip_distance), 0) AS congestion_index
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
             AND tpep_dropoff_datetime > tpep_pickup_datetime
             AND trip_distance > 0
         GROUP BY pulocationid
@@ -61,7 +61,7 @@ async def get_throughput_analysis(db: Session = Depends(get_db)) -> Dict[str, An
                 COUNT(*) / NULLIF((julianday(MAX(tpep_pickup_datetime)) - julianday(MIN(tpep_pickup_datetime))) * 24, 0) AS throughput_per_hour
             FROM trips
             WHERE tpep_pickup_datetime >= '2025-01-01'
-                AND tpep_pickup_datetime < '2025-05-01'
+                AND tpep_pickup_datetime < '2025-02-01'
                 AND tpep_dropoff_datetime > tpep_pickup_datetime
             GROUP BY pulocationid
             HAVING COUNT(*) >= 50
@@ -78,7 +78,7 @@ async def get_throughput_analysis(db: Session = Depends(get_db)) -> Dict[str, An
                 COUNT(*) / NULLIF(EXTRACT(EPOCH FROM (MAX(tpep_pickup_datetime) - MIN(tpep_pickup_datetime))) / 3600, 0) AS throughput_per_hour
             FROM trips
             WHERE tpep_pickup_datetime >= '2025-01-01'
-                AND tpep_pickup_datetime < '2025-05-01'
+                AND tpep_pickup_datetime < '2025-02-01'
                 AND tpep_dropoff_datetime > tpep_pickup_datetime
             GROUP BY pulocationid
             HAVING COUNT(*) >= 50
@@ -117,7 +117,7 @@ async def get_short_trip_impact(
             SUM(total_amount) / NULLIF(COUNT(*), 0) AS revenue_per_trip
         FROM trips
         WHERE tpep_pickup_datetime >= '2025-01-01'
-            AND tpep_pickup_datetime < '2025-05-01'
+            AND tpep_pickup_datetime < '2025-02-01'
             AND tpep_dropoff_datetime > tpep_pickup_datetime
         GROUP BY pulocationid
         HAVING COUNT(*) >= 50

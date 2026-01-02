@@ -5,7 +5,6 @@ import { Container, Typography, Grid, Paper, Alert } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import {
   getEfficiencyTimeSeries,
-  getEfficiencyHeatmap,
   getDemandEfficiencyCorrelation,
 } from '../services/efficiency';
 import LineChart from '../components/Charts/LineChart';
@@ -57,7 +56,7 @@ const Question2 = () => {
           {
             label: 'Demand vs Efficiency',
             data: correlationData.data.map((d) => ({
-              x: d.demand_trips || 0,
+              x: d.total_trips || 0,
               y: d.efficiency || 0,
             })),
             backgroundColor: 'rgba(75, 192, 192, 0.6)',

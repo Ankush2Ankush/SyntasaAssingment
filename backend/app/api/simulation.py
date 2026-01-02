@@ -29,7 +29,7 @@ async def simulate_min_distance(
                 {count_filter('trip_distance < :threshold')} AS trips_below_threshold
             FROM trips
             WHERE tpep_pickup_datetime >= '2025-01-01'
-                AND tpep_pickup_datetime < '2025-05-01'
+                AND tpep_pickup_datetime < '2025-02-01'
                 AND tpep_dropoff_datetime > tpep_pickup_datetime
         """
     else:
@@ -41,7 +41,7 @@ async def simulate_min_distance(
                 COUNT(*) FILTER (WHERE trip_distance < :threshold) AS trips_below_threshold
             FROM trips
             WHERE tpep_pickup_datetime >= '2025-01-01'
-                AND tpep_pickup_datetime < '2025-05-01'
+                AND tpep_pickup_datetime < '2025-02-01'
                 AND tpep_dropoff_datetime > tpep_pickup_datetime
         """
     

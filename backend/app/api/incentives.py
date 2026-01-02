@@ -102,7 +102,7 @@ async def get_incentive_misalignment(db: Session = Depends(get_db)) -> Dict[str,
                     COUNT(*) AS trip_count
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND tpep_dropoff_datetime > tpep_pickup_datetime
                 GROUP BY pulocationid, {extract_hour('tpep_pickup_datetime')}
                 HAVING COUNT(*) >= 10
@@ -115,7 +115,7 @@ async def get_incentive_misalignment(db: Session = Depends(get_db)) -> Dict[str,
                     COUNT(*) AS trip_count
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND tpep_dropoff_datetime > tpep_pickup_datetime
                 GROUP BY pulocationid, {extract_hour('tpep_pickup_datetime')}
                 HAVING COUNT(*) >= 10
@@ -152,7 +152,7 @@ async def get_incentive_misalignment(db: Session = Depends(get_db)) -> Dict[str,
                     AVG(fare_amount + tip_amount) / NULLIF(AVG({duration_minutes()}), 0) AS driver_score
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND tpep_dropoff_datetime > tpep_pickup_datetime
                 GROUP BY pulocationid, {extract_hour('tpep_pickup_datetime')}
                 HAVING COUNT(*) >= 10
@@ -164,7 +164,7 @@ async def get_incentive_misalignment(db: Session = Depends(get_db)) -> Dict[str,
                     SUM(total_amount) / NULLIF(COUNT(*) * AVG({duration_minutes()}) / 60, 0) AS system_score
                 FROM trips
                 WHERE tpep_pickup_datetime >= '2025-01-01'
-                    AND tpep_pickup_datetime < '2025-05-01'
+                    AND tpep_pickup_datetime < '2025-02-01'
                     AND tpep_dropoff_datetime > tpep_pickup_datetime
                 GROUP BY pulocationid, {extract_hour('tpep_pickup_datetime')}
                 HAVING COUNT(*) >= 10
