@@ -175,3 +175,4 @@ After successful update:
 - ✅ Indexes are present (should show 6+ indexes)
 - ✅ Public API endpoint responds without timeout
 
+

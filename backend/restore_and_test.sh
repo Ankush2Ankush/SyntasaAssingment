@@ -71,3 +71,4 @@ echo "Now test from Vercel frontend:"
 echo "https://hellosyntasa.vercel.app/api/v1/efficiency/timeseries"
 
 
+

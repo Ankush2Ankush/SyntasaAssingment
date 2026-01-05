@@ -88,3 +88,4 @@ aws cloudformation describe-stack-events --stack-name awseb-e-fdmctv57xe-stack -
 2. If errors found → Fix and retry
 3. If no errors → May be AWS capacity issue, wait or try different instance type
 
+

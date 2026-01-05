@@ -83,3 +83,4 @@ echo "If the efficiency endpoint still times out, the query might need optimizat
 echo "The query groups 15M rows by hour, which can be slow even with indexes."
 
 
+

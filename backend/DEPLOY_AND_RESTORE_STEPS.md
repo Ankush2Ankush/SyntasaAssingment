@@ -134,3 +134,4 @@ sudo systemctl start web.service
 The deployment updates the code, but resets the database. That's why we always restore from S3 after deployment.
 
 
+

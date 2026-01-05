@@ -139,3 +139,4 @@ Once you see **"Environment update aborted"** in Events:
 - Status will change to **"Ready"**
 - You can then run `eb deploy` again
 
+

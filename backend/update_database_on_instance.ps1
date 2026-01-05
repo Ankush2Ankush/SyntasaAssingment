@@ -186,3 +186,4 @@ Write-Host "3. Run the commands shown above (or use the automated script)" -Fore
 Write-Host "4. Verify the API is working: curl https://hellosyntasa.vercel.app/api/v1/efficiency/timeseries" -ForegroundColor White
 Write-Host ""
 
+

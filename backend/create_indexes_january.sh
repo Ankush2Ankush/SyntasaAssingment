@@ -139,3 +139,4 @@ echo "2. Monitor query performance"
 echo "3. If still slow, check nginx timeout settings (should be 300s)"
 
 
+

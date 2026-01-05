@@ -99,3 +99,4 @@ sqlite3 nyc_taxi.db "SELECT COUNT(*) FROM sqlite_master WHERE type='index';"
 - Verify database size is > 1MB
 - Check deployment logs for download errors
 
+

@@ -106,3 +106,4 @@ echo "Next: Test the public endpoint:"
 echo "https://hellosyntasa.vercel.app/api/v1/efficiency/timeseries"
 
 
+

@@ -129,3 +129,4 @@ echo "  2. Test public endpoint: curl https://hellosyntasa.vercel.app/api/v1/eff
 echo "  3. Check logs if needed: sudo journalctl -u web.service -n 50"
 echo ""
 
+
